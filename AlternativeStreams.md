@@ -2,7 +2,7 @@
 
 1. Every PhantomFS Primary Object contains 1 or more Streams, which defines data and associated metadata of the Object. Each stream has a name, called an id, a set of flags, and associated data.
 
-2. Recommended Practice: Operating Systems should make it possible to directly read (and, in some cases, write) the contents of an alternative stream. If a stream with id `Stream` is attached to a primary object with path `/foo/bar/baz`, then it should be possible to access that stream with the path `/foo/bar/$$baz$Stream`. If multiple streams with the same id exists, the first should be named `/foo/bar/$$baz$Stream$0`, the second `/foo/bar/$$baz$Stream$1`, etc.
+2. Recommended Practice: Operating Systems should make it possible to directly read (and, in some cases, write) the contents of an alternative stream. If a stream with id `Stream` is attached to a primary object with path `/foo/bar/baz`, then it should be possible to access that stream with the path `/foo/bar/$$baz$Stream`. If multiple streams with the same id exists, the first should be named `/foo/bar/$$baz$Stream$0`, the second `/foo/bar/$$baz$Stream$1`, etc. 
 
 ## Alternative Stream Listing
 
@@ -55,3 +55,4 @@ pub struct StreamListing{
     - The Nil UUID `00000000-0000-0000-0000-000000000000`, optionally enclosed in braces
     - URNs that start with `phantomfs:`
     - OIDs that start with the prefix 1.3.6.1.4.1.54569.5.1
+
