@@ -29,7 +29,7 @@ pub struct Object{
         - `0` (Regular File): The object primarily contains data, to be interpreted by programs opening the file. Regular files should have a "FileData" stream that contains these bytes
         - `1` (Directory): The object is primarily a directory that contains other files. Directories should have a "DirectoryContent" stream that contains the files
         - `2` (Symlink): The Object Primarily refers to the logical path of another object. In most cases, Symlinks are transparently replacable with the referent path. Symlinks should have a "SymlinkTarget" stream that contains the logical path as a UTF-8 stirng
-        - `3` (Unix FIFO): The object is primarily a Named Pipe/FIFO object. 
+        - `3` (POSIX FIFO): The object is primarily a Named Pipe/FIFO object. 
         - `4` (Unix Socket): The object is primarily a Unix Socket. 
         - `5` (Block Device): The object is primarily a Block Device. Block Device Files should have a "DeviceId" stream or a "LegacyDeviceNumber" stream.
         - `6` (Character Device): The object is primarily a Character Device. Character Device Files should have a "DeviceId" stream or a "LegacyDeviceNumber" stream.
