@@ -1,8 +1,8 @@
 # Objects 
 
-1. Every file and directory in the phantomfs is uniformly described as Objects. Objects describe basic information about how to access the information (if any) stored with the file.
+1. Every file and directory in the phantomfs is uniformly described as objects. Objects describe basic information about how to access the information (if any) stored with the file.
 
-2. Each Object is described by the following 64 byte structure
+2. Each object is described by the following 64 byte structure
 ```rust
 #[repr(C,align(64))]
 pub struct Object{
@@ -46,7 +46,7 @@ pub struct Object{
 
 ## Directories
 
-1. Objects with a type of Directory is a directory containing other objects. Opening the file by path accesses the content of the "DirectoryContent" stream if it exists. Additionally, it is valid to refer to objects contained within the path using the directory separator on the platform (For example `/` on unix-like platforms), if the DirectoryContent stream exists.
+1. Objects with a type of Directory is a directory containing other objects. Opening the file by path accesses the content of the "DirectoryContent" stream if it exists. Additionally, it is valid to refer to objects contained within the path using the directory separator on the platform (For example `/` on POSIX platforms), if the DirectoryContent stream exists.
 2. An object may have a stream with an id of "DirectoryContent" and may have at most one such stream. Such a stream shall have the required bit set if it appears on a Directory object, otherwise it may be set at the option of the implementaiton. No impl_bits may be set on the stream. 
 3. The content of the DirectoryContent stream is an array of elements containing the following structure 64-byte structure:
 ```rust
@@ -64,7 +64,7 @@ pub struct DirectoryElement{
     - name_index shall either be None or an index in the "Strings" stream of the object, which is a NUll-Terminated UTF-8 String that is the name of the object within the directory. 
     - flags is a bitfield of the following:
         - 0x0000000000000001 (weak): The reference to the object within this directory is weak and does not keep hold of the content of the file. Removing this reference only decrements the weak count
-        - 0x0000000000000002 (hidden): The file is hidden within the directory. This bit is a hint that indicates that UIs should not typically display this file to users unless enabled by user request (such as the `-a` flag for the unix ls command, or a "Show Hidden Files" option in a GUI-based file explorer).
+        - 0x0000000000000002 (hidden): The file is hidden within the directory. This bit is a hint that indicates that UIs should not typically display this file to users unless enabled by user request (such as the `-a` flag for the POSIX ls command, or a "Show Hidden Files" option in a GUI-based file explorer).
         - Other flags are reserved and MUST NOT be set.
     - name contains the UTF-8 encoded name of the object within the directory if the length in bytes of that name is up to 40, with all trailing bytes (if any) set to zero. Otherwise, each byte in name shall be set to zero and the name is given by the name_index field.
 

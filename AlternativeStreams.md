@@ -1,12 +1,12 @@
 # Alternative Streams
 
-1. Every PhantomFS Primary Object contains 1 or more Streams, which defines data and associated metadata of the Object. Each stream has a name, called an id, a set of flags, and associated data.
+1. Every PhantomFS object contains 1 or more Streams, which defines data and associated metadata of the Object. Each stream has a name, called an id, a set of flags, and associated data.
 
-2. Recommended Practice: Operating Systems should make it possible to directly read (and, in some cases, write) the contents of an alternative stream. If a stream with id `Stream` is attached to a primary object with path `/foo/bar/baz`, then it should be possible to access that stream with the path `/foo/bar/$$baz$Stream`. If multiple streams with the same id exists, the first should be named `/foo/bar/$$baz$Stream$0`, the second `/foo/bar/$$baz$Stream$1`, etc. 
+2. Recommended Practice: Operating Systems should make it possible to directly read (and, in some cases, write) the contents of an alternative stream. If a stream with id `Stream` is attached to an object with path `/foo/bar/baz`, then it should be possible to access that stream with the path `/foo/bar/$$baz$Stream`. If multiple streams with the same id exists, the first should be named `/foo/bar/$$baz$Stream$0`, the second `/foo/bar/$$baz$Stream$1`, etc. 
 
 ## Alternative Stream Listing
 
-1. Each Primary Object shall have a Stream with id `Streams`. This stream contains the list of streams available on the object. The size of the stream shall be a whole number multiple of 128 bytes, divided into individual elements of 128 bytes, which are interpreted according to the following Rust structure
+1. Each object shall have a Stream with id `Streams`. This stream contains the list of streams available on the object. The size of the stream shall be a whole number multiple of 128 bytes, divided into individual elements of 128 bytes, which are interpreted according to the following Rust structure
 
 ```rust
 #[repr(C,align(128))]
@@ -42,7 +42,7 @@ pub struct StreamListing{
 
 ## Long Strings Array
 
-1. Each Primary Object may have a stream with the id `Strings`. A primary object may have at most one stream with the id `Strings`. The required bit of this stream MUST be set and all impl_use bits MUST be clear. 
+1. Each object may have a stream with the id `Strings`. A object may have at most one stream with the id `Strings`. The required bit of this stream MUST be set and all impl_use bits MUST be clear. 
 2. The `Strings` stream contains an array of Null Terminated UTF-8 strings. The first byte of the stream MUST be `0` (an empty null-terminated string). The index `0` refers to this byte and acts as a sentinel value.
 
 
