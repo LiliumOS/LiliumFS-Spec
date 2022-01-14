@@ -73,6 +73,8 @@ pub struct DirectoryElement{
 1. Objects with a type of Symbolic Link are symbolic (logical) references to other files on the system. Opening this file follows the symbolic link to the path given by the "SymlinkTarget" stream, if any, unless the file is opened using an implementation-defined mechanism that does not follow the symbolic link. The details of such a mechanism, if any, are not specified.
 2. An object may have a stream with an id of "SymlinkTarget" and may have at most one such stream. Such a stream shall have the required bit set if it appears on a Symbolic Link Object, otherwise it may be set at the option of the implementation. No impl_bits may be set on the stream.
 3. The content of the SymlinkTarget stream is precisely the UTF-8 String that contains the path the symbolic link logically refers to, not including a NUL Terminator byte.
+4. The result of opening the `SymlinkTarget` stream shall be the same as opening the path given by the "SymlinkTarget" stream, if any, unless the file is opened using an implementation-defined mechanism that does not follow the symbolic link
+5. The result of following a Symbolic link that denies access to the `SymlinkTarget` stream is unspecified. 
 
 ## Nonstoring File Types
 

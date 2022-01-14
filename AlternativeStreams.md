@@ -37,7 +37,7 @@ pub struct StreamListing{
     - size shall be the size, in bytes, of the data contained by the stream, not rounded to the nearest sector size
     - reserved shall be an array of all `0`s. Any other value in these fields MUST be ignored and MUST NOT be written.
     - inline_data contains the data of the stream if it is inline (indirection=0). Otherwise it is ignored and may contain any bytes.
-3. A primary object may contain at most one stream with the id `Streams` and this stream MUST be the first element or access to the current primary object MUST be defined. The required bit MUST be set for the stream with id `Streams` and all impl_use bits MUST be clear. 
+3. A primary object may contain at most one stream with the id `Streams` and this stream must be the first element or access to the current primary object must be denied. The required bit must be set for the stream with id `Streams` and all impl_use bits MUST be clear. 
 4. Recommened Practice: If a filesystem contains a file for which all access is denied by this section, the filesystem SHOULD fail to load if this can be detected. If a filesystem contains a file for which write access is denied by this section, the filesystem SHOULD fail to load in read-write configuration if this can be detected. 
 
 ## Long Strings Array
@@ -48,7 +48,7 @@ pub struct StreamListing{
 
 ## Implementation Specific (Extended) Streams
 
-1. An implementation may define extended streams that have an id that does not contain the `$` symbol and is not a standard stream name. The Phantom Filesystem reserves all stream names that consist of soley ASCII Letters and underscore characters for future use. Additionally, special cases of common unique id forms are reserved, as specified below.
+1. An implementation may define extended streams that have an id that does not contain the `$` symbol and is not a standard stream name. The Phantom Filesystem reserves all stream names that consist of solely ASCII Letters and underscore characters for future use. Additionally, special cases of common unique id forms are reserved, as specified below.
 2. An implementation that defines an extended stream may assign meaning to the impl_use bits of the `flags` field of the stream.
 3. Recommended Practice: An implementation SHOULD ensure that extended streams are unique from other stream names, by assigning ids in forms that are likely to be unique, such as Universally Unique Identifiers (Optionally enclosed in braces), Uniform Resource Names with a unique prefix, Object Identifiers, or some other form that is likely to be unique.
 4. The following id forms are reserved by this specification:
