@@ -14,7 +14,9 @@ pub struct Object{
     reserved33: [u8; 5],
     ty: u16,
     flags: u32,
-    reserved44: [u8; 20],
+    reserved44: [u8; 4],
+    strings_stream: Option<NonZeroU64>,
+    reserved56: [u8; 8]
 }
 ```
 
@@ -24,7 +26,7 @@ pub struct Object{
     - streams_size is the size of the `Streams` stream, if the object's strong_count is > 0
     - streams_ref is index of the sector containing the `Streams` stream if the object's strong_count > 0. If streams_indirections > 1, then this refers to the indirection table for the appropriate level of indirection.
     - streams_indirection is the indirection level of the `Streams` stream. Always greater than `0` if the object's strong_count > 0 
-    - reserved33 and reserved44 are all set to 0, and other values should be ignored
+    - reserved33, reserved44, and reserved56 are all set to 0, and other values should be ignored
     - `ty` is the type of the object, and is interpreted as follows:
         - `0` (Regular File): The object primarily contains data, to be interpreted by programs opening the file. Regular files should have a "FileData" stream that contains these bytes
         - `1` (Directory): The object is primarily a directory that contains other files. Directories should have a "DirectoryContent" stream that contains the files
@@ -35,6 +37,8 @@ pub struct Object{
         - `6` (Character Device): The object is primarily a Character Device. Character Device Files should have a "DeviceId" stream or a "LegacyDeviceNumber" stream.
         - 65535 (Custom Type): The object has implementation-specific or custom semantics. Custom Type Objects should have a "CustomObjectInfo" stream.
         - other values are reserved and implementations MUST not allow access to objects with invalid types. 
+    - `flags` is object flags. No flags are presently defined, and the field must be set to `0`,
+    - strings_stream, if not None, is the index into the Streams stream which designates the `Strings` stream for the object. Any reference to the `Strings` stream by this spec refers to the stream designated by this section.
 
 4. Objects appear in an table within the filesystem, accessible from the filesystem information block. At most 18446744073709551615 total objects may exist within a single filesystem.
 
