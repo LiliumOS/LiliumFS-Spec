@@ -66,3 +66,51 @@ pub struct PartitionedDeviceInfo{
 8. It is implementation-defined whether an object with a `PartionedDevice` stream, and no `DirectoryContent` stream may be used directly in path resolution and enumeration without an explicit stream reference. 
 
 9. If a symbolic object that represents a partition has type `RegularFile`, it is implementation defined whether the partition may be viewed as a directory immediately after writing a recongized filesystem to the `FileData` stream of that object. If the file has type `Directory`, it is implementation-defined whether the `FileContent` stream is present and may be modified, and whether modifying the `FileContent` stream will reflect immediate changes on the objects viewed by the `DirectoryContent` stream.
+
+
+## Additional Object Metadata
+
+1. The `Metadata` stream stores additional data about the object, which provides miscellaneous information about the file. 
+2. The stream type is `"Metadata"`. Whether or not the `REQUIRED`, `WRITE_REQUIRED`, or `ENUEMRATE_REQUIRED` bits are set is unspecified. If the `REQUIRED` bit is not set, the `PRESERVED` bits shall be set. 
+3. The content of the `Metadata` stream is an array of the following elements, where the length of the array is the size of the stream divided by the size of the structure
+```rust
+#[repr(align(32))]
+pub struct MetadataElement{
+    type_ref: Option<NonZeroU64>,
+    inline_type: [u8;16],
+    data_tys: [u8;8],
+    data: [u8;64]
+}
+```
+
+4. `type_ref` is either `None` or the offset into the `Strings` stream, designating the name of the metadata type
+5. `inline_type` is either set to `0` or is the name of the metadata type in UTF-8, if it is at most 20 bytes long, with remaining bytes set to `0`. 
+6. `data_tys` stores information about the fields (in order) stored in `data`. Up to 8 fields total may be stored. Each type is one of:
+    * `0` (no type): No more data. Remaining fields must be set to `0`
+    * `1` (`u8`): A 1 byte integer, signed (2s complement) or unsigned
+    * `2` (`u16`): A 2 byte integer, signed (2s complement) or unsigned
+    * `3` (`UUID`): A uuid stored as 2 `u64`s
+    * `4` (`u32`): A 4 byte integer, signed (2s complement) or unsigned
+    * `5` (`Offset`): An Offset or Duration, stored as a i64 seconds since the UNIX epoch, followed by subsecond nanos
+    * `8` (`u64`): An 8 byte integer, signed (2s complement) or unsigned
+    * `32+n` (`String`): A String, stored as a 8 byte optional index into the string table, and an `n` byte inline string, `0<=n<=32`
+    * All other types are reserved and any metadata that specifies a field of a reserved type must be ignored.
+7. `data` is the data the metadata object contains, with layout given by `data_tys`. 
+8. There shall be at most one `Metadata` stream per object.
+
+## Stream Metadata
+
+1. The `StreamMetadata` stream stores additional data about streams attached to an object, which provides miscellaneous information about those streams.
+2. The stream type is `StreamMetadata`. Whether or not the `REQUIRED`, `WRITE_REQUIRED`, or `ENUEMRATE_REQUIRED` bits are set is unspecified. If the `REQUIRED` bit is not set, the `PRESERVED` bits shall be set. 
+3. The content of the `StreamMetadata` is the following 32 byte header, followed by an array of the `MetadataElement` type defined above, where the length of the array is given by the remaining size of the stream, divided by the element size.
+```rust
+#[repr(align(64))]
+pub struct StreamMetadataHeader{
+    target_stream: u64,
+    reserved: [u64;3]
+}
+```
+
+4. `target_stream` is set to the index in the streams array designating the stream that the metadata stream applies to. [Note: This may be set to `0` and designate the `Streams` stream]
+5. `reserved` shall be set to `0`.
+6. There may be any number of `StreamMetadata` streams. 
